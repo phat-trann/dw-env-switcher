@@ -17,7 +17,7 @@ export class LogFileItem extends vscode.TreeItem {
         );
         this.command = {
             title: 'Tail Log',
-            command: 'dw-env-switcher.tailLog',
+            command: 'dw-manager.tailLog',
             arguments: [this]
         };
     }

@@ -36,7 +36,7 @@ describe('discoverCartridgeRoots', () => {
     let root: string;
 
     beforeAll(() => {
-        root = fs.mkdtempSync(path.join(os.tmpdir(), 'dw-env-switcher-discovery-'));
+        root = fs.mkdtempSync(path.join(os.tmpdir(), 'dw-manager-discovery-'));
 
         // Case A: <project>/cartridge -> project folder itself is the root
         fs.mkdirSync(path.join(root, 'projectA', 'cartridge'), { recursive: true });

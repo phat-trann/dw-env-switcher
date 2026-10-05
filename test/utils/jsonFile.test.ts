@@ -14,7 +14,7 @@ import { tryReadJson } from '../../src/utils/jsonFile';
 const tmpFiles: string[] = [];
 
 function writeTempFile(content: string): string {
-    const file = path.join(os.tmpdir(), `dw-env-switcher-test-${Date.now()}-${Math.random().toString(36).slice(2)}.json`);
+    const file = path.join(os.tmpdir(), `dw-manager-test-${Date.now()}-${Math.random().toString(36).slice(2)}.json`);
     fs.writeFileSync(file, content);
     tmpFiles.push(file);
     return file;
@@ -43,7 +43,7 @@ describe('tryReadJson', () => {
     });
 
     it('returns an error instead of throwing when the file does not exist', () => {
-        const result = tryReadJson(path.join(os.tmpdir(), 'dw-env-switcher-does-not-exist.json'));
+        const result = tryReadJson(path.join(os.tmpdir(), 'dw-manager-does-not-exist.json'));
         expect(result.data).toBeUndefined();
         expect(result.error).toBeInstanceOf(Error);
     });

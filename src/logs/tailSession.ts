@@ -54,7 +54,7 @@ export class LogTailSession {
                 // First fetch, or the server ignored our Range header and returned the whole file.
                 const rotated = !isFirst && bodyBuffer.byteLength < this.lastSize;
                 if (rotated) {
-                    this.channel.appendLine('\n[dw-env-switcher] Log file was rotated/truncated — showing latest content.\n');
+                    this.channel.appendLine('\n[dw-manager] Log file was rotated/truncated — showing latest content.\n');
                 }
                 const newContent = isFirst || rotated ? result.body : bodyBuffer.subarray(this.lastSize).toString('utf-8');
                 if (newContent) this.channel.append(newContent);
@@ -66,7 +66,7 @@ export class LogTailSession {
             if (result.body) this.channel.append(result.body);
             this.lastSize += bodyBuffer.byteLength;
         } catch (err) {
-            this.channel.appendLine(`\n[dw-env-switcher] Stopped tailing — ${err instanceof Error ? err.message : String(err)}`);
+            this.channel.appendLine(`\n[dw-manager] Stopped tailing — ${err instanceof Error ? err.message : String(err)}`);
             this.stop();
         }
     }

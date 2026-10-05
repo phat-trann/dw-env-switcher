@@ -44,7 +44,7 @@ export async function simpleSandboxSelection(context: vscode.ExtensionContext) {
 
     writeJson(dwPath, { hostname: sandbox.hostname, username, password, 'code-version': sandbox['code-version'], cartridges: sandbox.cartridges || [], name: sandbox.name });
     vscode.window.showInformationMessage(`dw.json updated for ${sandbox.name}`);
-    vscode.commands.executeCommand('dw-env-switcher.refreshLogs');
+    vscode.commands.executeCommand('dw-manager.refreshLogs');
 }
 
 export async function detailedSandboxSelection(context: vscode.ExtensionContext, sandboxName?: string) {
@@ -106,6 +106,6 @@ export async function detailedSandboxSelection(context: vscode.ExtensionContext,
     writeJson(dwPath, sandbox);
 
     vscode.window.showInformationMessage(`Saved sandbox ${name}`);
-    vscode.commands.executeCommand('dwEnvSwitcherView.refresh');
-    vscode.commands.executeCommand('dw-env-switcher.refreshLogs');
+    vscode.commands.executeCommand('dwManagerView.refresh');
+    vscode.commands.executeCommand('dw-manager.refreshLogs');
 }

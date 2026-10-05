@@ -64,7 +64,7 @@ export async function importSetup(context: vscode.ExtensionContext) {
         }
 
         vscode.window.showInformationMessage('Import completed.');
-        vscode.commands.executeCommand('dwEnvSwitcherView.refresh');
-        vscode.commands.executeCommand('dw-env-switcher.refreshLogs');
+        vscode.commands.executeCommand('dwManagerView.refresh');
+        vscode.commands.executeCommand('dw-manager.refreshLogs');
     });
 }

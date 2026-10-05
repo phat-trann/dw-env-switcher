@@ -36,7 +36,7 @@ export async function deleteSavedSandbox(context: vscode.ExtensionContext) {
 
     removeSandboxByName(envs, sandbox);
     writeJson(envPath, envs);
-    vscode.commands.executeCommand('dwEnvSwitcherView.refresh');
+    vscode.commands.executeCommand('dwManagerView.refresh');
 }
 
 export async function deleteSandboxFromView(context: vscode.ExtensionContext, item: SandboxItem) {
@@ -50,7 +50,7 @@ export async function deleteSandboxFromView(context: vscode.ExtensionContext, it
     if (!envs) return;
     removeSandboxByName(envs, item.sandbox.name);
     writeJson(envPath, envs);
-    vscode.commands.executeCommand('dwEnvSwitcherView.refresh');
+    vscode.commands.executeCommand('dwManagerView.refresh');
 }
 
 export async function changeCartridges(context: vscode.ExtensionContext, item: SandboxItem) {
@@ -72,7 +72,7 @@ export async function changeCartridges(context: vscode.ExtensionContext, item: S
         writeJson(envPath, envs);
         writeJson(dwPath, sandbox);
         vscode.window.showInformationMessage(`Updated cartridges for ${sandbox.name}`);
-        vscode.commands.executeCommand('dwEnvSwitcherView.refresh');
+        vscode.commands.executeCommand('dwManagerView.refresh');
     }
 }
 
@@ -144,8 +144,8 @@ export async function changeUser(context: vscode.ExtensionContext, item: Sandbox
         writeJson(envPath, envs);
         writeJson(dwPath, sandbox);
         vscode.window.showInformationMessage(`Updated user for ${sandbox.name}`);
-        vscode.commands.executeCommand('dwEnvSwitcherView.refresh');
-        vscode.commands.executeCommand('dw-env-switcher.refreshLogs');
+        vscode.commands.executeCommand('dwManagerView.refresh');
+        vscode.commands.executeCommand('dw-manager.refreshLogs');
     }
 }
 
@@ -191,7 +191,7 @@ export async function changeSavedPassword(context: vscode.ExtensionContext) {
     }
 
     vscode.window.showInformationMessage(`Password updated for user "${username}".`);
-    vscode.commands.executeCommand('dw-env-switcher.refreshLogs');
+    vscode.commands.executeCommand('dw-manager.refreshLogs');
 }
 
 export async function activateSandbox(sandbox: SandboxConfig) {
@@ -204,10 +204,10 @@ export async function activateSandbox(sandbox: SandboxConfig) {
 
     vscode.window.showInformationMessage(`Activated sandbox: ${sandbox.name}`);
 
-    vscode.commands.executeCommand('dwEnvSwitcherView.refresh');
-    vscode.commands.executeCommand('dw-env-switcher.refreshLogs');
+    vscode.commands.executeCommand('dwManagerView.refresh');
+    vscode.commands.executeCommand('dw-manager.refreshLogs');
 }
 
 export function editSandboxFromView(item: SandboxItem) {
-    vscode.commands.executeCommand('dw-env-switcher.selectSandboxWithDetails', item.sandbox.name);
+    vscode.commands.executeCommand('dw-manager.selectSandboxWithDetails', item.sandbox.name);
 }

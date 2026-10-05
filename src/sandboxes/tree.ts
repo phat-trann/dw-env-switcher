@@ -21,7 +21,7 @@ export class SandboxItem extends vscode.TreeItem {
         }
 
         this.command = {
-            command: 'dw-env-switcher.activateSandbox',
+            command: 'dw-manager.activateSandbox',
             title: 'Activate Sandbox',
             arguments: [this.sandbox]
         };

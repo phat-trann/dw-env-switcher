@@ -1,12 +1,12 @@
 {
-  "name": "dw-env-switcher",
-  "displayName": "DW Environment Switcher",
-  "description": "Easily switch and manage Salesforce sandbox environments, store credentials securely, and export/import setups.",
-  "version": "0.1.11",
-  "publisher": "IvayloTrepetanov",
+  "name": "dw-manager",
+  "displayName": "DW Manager",
+  "description": "Easily switch and manage Salesforce sandbox environments, save workspace configurations, and export/import setups.",
+  "version": "1.0.1",
+  "publisher": "Ferb",
   "repository": {
     "type": "git",
-    "url": "https://github.com/interfan/dw-env-switcher"
+    "url": "https://github.com/phat-trann/dw-manager"
   },
   "license": "MIT",
   "icon": "icon.png",
@@ -18,7 +18,7 @@
     "salesforce",
     "sandbox",
     "environment",
-    "switcher",
+    "manager",
     "dw",
     "credentials",
     "developer",
@@ -29,35 +29,35 @@
     "Debuggers"
   ],
   "activationEvents": [
-    "onCommand:dw-env-switcher.selectSandbox",
-    "onCommand:dw-env-switcher.selectSandboxWithDetails",
-    "onCommand:dw-env-switcher.deleteSavedUsername",
-    "onCommand:dw-env-switcher.deleteSavedSandbox",
-    "onCommand:dw-env-switcher.exportSetup",
-    "onCommand:dw-env-switcher.importSetup",
-    "onCommand:dw-env-switcher.switchCodeVersion",
-    "onCommand:dw-env-switcher.deleteSandboxFromView",
-    "onCommand:dwEnvSwitcherView.refresh",
-    "onCommand:dw-env-switcher.addNewSandbox",
-    "onCommand:dw-env-switcher.changeCartridges",
-    "onCommand:dw-env-switcher.changeUser",
-    "onCommand:dw-env-switcher.editSandboxFromView",
-    "onCommand:dw-env-switcher.changeSavedPassword",
-    "onCommand:dw-env-switcher.enableProphetUpload",
-    "onCommand:dw-env-switcher.disableProphetUpload",
-    "onView:dwCartridgesView",
-    "onCommand:dw-env-switcher.refreshCartridges",
-    "onCommand:dw-env-switcher.openCartridge",
-    "onCommand:dw-env-switcher.revealCartridgeInExplorer",
-    "onView:dwLogsView",
-    "onCommand:dw-env-switcher.refreshLogs",
-    "onCommand:dw-env-switcher.tailLog",
-    "onCommand:dw-env-switcher.stopTailingLog"
+    "onCommand:dw-manager.selectSandbox",
+    "onCommand:dw-manager.selectSandboxWithDetails",
+    "onCommand:dw-manager.deleteSavedUsername",
+    "onCommand:dw-manager.deleteSavedSandbox",
+    "onCommand:dw-manager.exportSetup",
+    "onCommand:dw-manager.importSetup",
+    "onCommand:dw-manager.switchCodeVersion",
+    "onCommand:dw-manager.deleteSandboxFromView",
+    "onCommand:dwManagerView.refresh",
+    "onCommand:dw-manager.addNewSandbox",
+    "onCommand:dw-manager.changeCartridges",
+    "onCommand:dw-manager.changeUser",
+    "onCommand:dw-manager.editSandboxFromView",
+    "onCommand:dw-manager.changeSavedPassword",
+    "onCommand:dw-manager.enableProphetUpload",
+    "onCommand:dw-manager.disableProphetUpload",
+    "onView:dwManagerCartridgesView",
+    "onCommand:dw-manager.refreshCartridges",
+    "onCommand:dw-manager.openCartridge",
+    "onCommand:dw-manager.revealCartridgeInExplorer",
+    "onView:dwManagerLogsView",
+    "onCommand:dw-manager.refreshLogs",
+    "onCommand:dw-manager.tailLog",
+    "onCommand:dw-manager.stopTailingLog"
   ],
   "contributes": {
     "submenus": [
       {
-        "id": "dw-env-switcher.sandboxActionsMenu",
+        "id": "dw-manager.sandboxActionsMenu",
         "label": "Sandbox Actions",
         "icon": "$(ellipsis)"
       }
@@ -65,77 +65,77 @@
     "menus": {
       "view/title": [
         {
-          "command": "dw-env-switcher.addNewSandbox",
-          "when": "view == dwEnvSwitcherView",
+          "command": "dw-manager.addNewSandbox",
+          "when": "view == dwManagerView",
           "group": "navigation"
         },
         {
-          "command": "dw-env-switcher.refreshCartridges",
-          "when": "view == dwCartridgesView",
+          "command": "dw-manager.refreshCartridges",
+          "when": "view == dwManagerCartridgesView",
           "group": "navigation"
         },
         {
-          "command": "dw-env-switcher.refreshLogs",
-          "when": "view == dwLogsView",
+          "command": "dw-manager.refreshLogs",
+          "when": "view == dwManagerLogsView",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "submenu": "dw-env-switcher.sandboxActionsMenu",
-          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "submenu": "dw-manager.sandboxActionsMenu",
+          "when": "view == dwManagerView && viewItem == sandbox",
           "group": "inline"
         },
         {
-          "command": "dw-env-switcher.openCartridge",
-          "when": "view == dwCartridgesView && viewItem == cartridge",
+          "command": "dw-manager.openCartridge",
+          "when": "view == dwManagerCartridgesView && viewItem == cartridge",
           "group": "inline"
         },
         {
-          "command": "dw-env-switcher.revealCartridgeInExplorer",
-          "when": "view == dwCartridgesView && viewItem == cartridge",
+          "command": "dw-manager.revealCartridgeInExplorer",
+          "when": "view == dwManagerCartridgesView && viewItem == cartridge",
           "group": "2_open"
         },
         {
-          "command": "dw-env-switcher.stopTailingLog",
-          "when": "view == dwLogsView && viewItem == logFileTailing",
+          "command": "dw-manager.stopTailingLog",
+          "when": "view == dwManagerLogsView && viewItem == logFileTailing",
           "group": "inline"
         }
       ],
-      "dw-env-switcher.sandboxActionsMenu": [
+      "dw-manager.sandboxActionsMenu": [
         {
-          "command": "dw-env-switcher.editSandboxFromView",
-          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "command": "dw-manager.editSandboxFromView",
+          "when": "view == dwManagerView && viewItem == sandbox",
           "group": "1_edit@1"
         },
         {
-          "command": "dw-env-switcher.changeCartridges",
-          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "command": "dw-manager.changeCartridges",
+          "when": "view == dwManagerView && viewItem == sandbox",
           "group": "1_edit@2"
         },
         {
-          "command": "dw-env-switcher.switchCodeVersion",
-          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "command": "dw-manager.switchCodeVersion",
+          "when": "view == dwManagerView && viewItem == sandbox",
           "group": "1_edit@3"
         },
         {
-          "command": "dw-env-switcher.changeUser",
-          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "command": "dw-manager.changeUser",
+          "when": "view == dwManagerView && viewItem == sandbox",
           "group": "1_edit@4"
         },
         {
-          "command": "dw-env-switcher.enableProphetUpload",
-          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "command": "dw-manager.enableProphetUpload",
+          "when": "view == dwManagerView && viewItem == sandbox",
           "group": "2_prophet@1"
         },
         {
-          "command": "dw-env-switcher.disableProphetUpload",
-          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "command": "dw-manager.disableProphetUpload",
+          "when": "view == dwManagerView && viewItem == sandbox",
           "group": "2_prophet@2"
         },
         {
-          "command": "dw-env-switcher.deleteSandboxFromView",
-          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "command": "dw-manager.deleteSandboxFromView",
+          "when": "view == dwManagerView && viewItem == sandbox",
           "group": "3_danger@1"
         }
       ]
@@ -143,130 +143,133 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "dwEnvSwitcher",
-          "title": "DW Environment Switcher",
+          "id": "dwManager",
+          "title": "DW Manager",
           "icon": "icon.svg"
         }
       ]
     },
     "views": {
-      "dwEnvSwitcher": [
+      "dwManager": [
         {
-          "id": "dwEnvSwitcherView",
+          "id": "dwManagerView",
           "name": "Sandboxes"
         },
         {
-          "id": "dwCartridgesView",
+          "id": "dwManagerCartridgesView",
           "name": "Cartridges"
         },
         {
-          "id": "dwLogsView",
+          "id": "dwManagerLogsView",
           "name": "Logs"
         }
       ]
     },
     "commands": [
       {
-        "command": "dw-env-switcher.selectSandbox",
+        "command": "dw-manager.selectSandbox",
         "title": "Select Sandbox"
       },
       {
-        "command": "dw-env-switcher.selectSandboxWithDetails",
+        "command": "dw-manager.selectSandboxWithDetails",
         "title": "Select Sandbox (Detailed)"
       },
       {
-        "command": "dw-env-switcher.editSandboxFromView",
+        "command": "dw-manager.editSandboxFromView",
         "title": "Edit Sandbox"
       },
       {
-        "command": "dw-env-switcher.changeCartridges",
+        "command": "dw-manager.changeCartridges",
         "title": "Change Cartridges"
       },
       {
-        "command": "dw-env-switcher.switchCodeVersion",
+        "command": "dw-manager.switchCodeVersion",
         "title": "Change Code Version"
       },
       {
-        "command": "dw-env-switcher.changeUser",
+        "command": "dw-manager.changeUser",
         "title": "Change User"
       },
       {
-        "command": "dw-env-switcher.deleteSandboxFromView",
+        "command": "dw-manager.deleteSandboxFromView",
         "title": "Delete Sandbox From View"
       },
       {
-        "command": "dw-env-switcher.deleteSavedSandbox",
+        "command": "dw-manager.deleteSavedSandbox",
         "title": "Delete Saved Sandbox"
       },
       {
-        "command": "dw-env-switcher.exportSetup",
+        "command": "dw-manager.exportSetup",
         "title": "Export Sandbox Setup"
       },
       {
-        "command": "dw-env-switcher.importSetup",
+        "command": "dw-manager.importSetup",
         "title": "Import Sandbox Setup"
       },
       {
-        "command": "dw-env-switcher.addNewSandbox",
+        "command": "dw-manager.addNewSandbox",
         "title": "Add New Sandbox"
       },
       {
-        "command": "dw-env-switcher.deleteSavedUsername",
+        "command": "dw-manager.deleteSavedUsername",
         "title": "Delete Saved Username"
       },
       {
-        "command": "dwEnvSwitcherView.refresh",
+        "command": "dwManagerView.refresh",
         "title": "Refresh Sandbox View"
       },
       {
-        "command": "dw-env-switcher.changeSavedPassword",
+        "command": "dw-manager.changeSavedPassword",
         "title": "Change Saved Password"
       },
       {
-        "command": "dw-env-switcher.enableProphetUpload",
-        "title": "DW Env Switcher: Enable Upload (Prophet)"
+        "command": "dw-manager.enableProphetUpload",
+        "title": "DW Manager: Enable Upload (Prophet)"
       },
       {
-        "command": "dw-env-switcher.disableProphetUpload",
-        "title": "DW Env Switcher: Disable Upload (Prophet)"
+        "command": "dw-manager.disableProphetUpload",
+        "title": "DW Manager: Disable Upload (Prophet)"
       },
       {
-        "command": "dw-env-switcher.refreshCartridges",
+        "command": "dw-manager.refreshCartridges",
         "title": "Refresh Cartridges"
       },
       {
-        "command": "dw-env-switcher.openCartridge",
+        "command": "dw-manager.openCartridge",
         "title": "Open Cartridge"
       },
       {
-        "command": "dw-env-switcher.revealCartridgeInExplorer",
+        "command": "dw-manager.revealCartridgeInExplorer",
         "title": "Reveal Cartridge in Explorer"
       },
       {
-        "command": "dw-env-switcher.refreshLogs",
+        "command": "dw-manager.refreshLogs",
         "title": "Refresh Logs"
       },
       {
-        "command": "dw-env-switcher.tailLog",
+        "command": "dw-manager.tailLog",
         "title": "Tail Log"
       },
       {
-        "command": "dw-env-switcher.stopTailingLog",
+        "command": "dw-manager.stopTailingLog",
         "title": "Stop Tailing"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run compile && npm run bundle",
     "compile": "tsc -p ./",
     "watch": "tsc -w -p ./",
     "bundle": "esbuild src/extension.ts --bundle --platform=node --outfile=out/extension.js --external:vscode --external:@aws-sdk/client-s3",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:vsix": "node scripts/build-vsix.mjs",
+    "build": "npm run build:vsix"
   },
   "devDependencies": {
     "@types/archiver": "^6.0.3",
     "@types/node": "^18.0.0",
     "@types/vscode": "^1.80.0",
+    "@vscode/vsce": "^4.0.0",
     "esbuild": "^0.25.4",
     "typescript": "^5.0.0",
     "vitest": "^1.6.1"

@@ -44,45 +44,45 @@ export { exportSetup, importSetup } from './io/exportImport';
 export function activate(context: vscode.ExtensionContext) {
     // Sandboxes panel
     const sandboxProvider = new SandboxTreeDataProvider(context);
-    vscode.window.registerTreeDataProvider('dwEnvSwitcherView', sandboxProvider);
+    vscode.window.registerTreeDataProvider('dwManagerView', sandboxProvider);
 
     // Cartridges panel
     const cartridgesProvider = new CartridgesTreeDataProvider(context);
-    vscode.window.registerTreeDataProvider('dwCartridgesView', cartridgesProvider);
+    vscode.window.registerTreeDataProvider('dwManagerCartridgesView', cartridgesProvider);
 
     // Logs panel — live-tails sandbox log files over WebDAV
     const logsProvider = new LogsTreeDataProvider();
-    vscode.window.registerTreeDataProvider('dwLogsView', logsProvider);
+    vscode.window.registerTreeDataProvider('dwManagerLogsView', logsProvider);
 
     context.subscriptions.push(
         { dispose: () => logsProvider.disposeAll() },
-        vscode.commands.registerCommand('dw-env-switcher.selectSandbox', () => simpleSandboxSelection(context)),
-        vscode.commands.registerCommand('dw-env-switcher.selectSandboxWithDetails', (sandboxName) => detailedSandboxSelection(context, sandboxName)),
-        vscode.commands.registerCommand('dw-env-switcher.deleteSavedUsername', () => deleteSavedUsername(context)),
-        vscode.commands.registerCommand('dw-env-switcher.deleteSavedSandbox', () => deleteSavedSandbox(context)),
-        vscode.commands.registerCommand('dw-env-switcher.exportSetup', () => exportSetup(context)),
-        vscode.commands.registerCommand('dw-env-switcher.importSetup', () => importSetup(context)),
-        vscode.commands.registerCommand('dw-env-switcher.switchCodeVersion', () => switchCurrentSandboxCodeVersion(context)),
-        vscode.commands.registerCommand('dw-env-switcher.deleteSandboxFromView', (item: SandboxItem) => deleteSandboxFromView(context, item)),
-        vscode.commands.registerCommand('dwEnvSwitcherView.refresh', () => sandboxProvider.refresh()),
-        vscode.commands.registerCommand('dw-env-switcher.addNewSandbox', () => detailedSandboxSelection(context)),
-        vscode.commands.registerCommand('dw-env-switcher.changeCartridges', (item: SandboxItem) => changeCartridges(context, item)),
-        vscode.commands.registerCommand('dw-env-switcher.changeUser', (item: SandboxItem) => changeUser(context, item)),
-        vscode.commands.registerCommand('dw-env-switcher.editSandboxFromView', (item: SandboxItem) => editSandboxFromView(item)),
-        vscode.commands.registerCommand('dw-env-switcher.changeSavedPassword', () => changeSavedPassword(context)),
-        vscode.commands.registerCommand('dw-env-switcher.activateSandbox', (sandbox) => activateSandbox(sandbox)),
-        vscode.commands.registerCommand('dw-env-switcher.enableProphetUpload', () => enableProphetUpload()),
-        vscode.commands.registerCommand('dw-env-switcher.disableProphetUpload', () => disableProphetUpload()),
-        vscode.commands.registerCommand('dw-env-switcher.refreshCartridges', () => cartridgesProvider.refresh()),
-        vscode.commands.registerCommand('dw-env-switcher.openCartridge', (item: CartridgeItem) => {
+        vscode.commands.registerCommand('dw-manager.selectSandbox', () => simpleSandboxSelection(context)),
+        vscode.commands.registerCommand('dw-manager.selectSandboxWithDetails', (sandboxName) => detailedSandboxSelection(context, sandboxName)),
+        vscode.commands.registerCommand('dw-manager.deleteSavedUsername', () => deleteSavedUsername(context)),
+        vscode.commands.registerCommand('dw-manager.deleteSavedSandbox', () => deleteSavedSandbox(context)),
+        vscode.commands.registerCommand('dw-manager.exportSetup', () => exportSetup(context)),
+        vscode.commands.registerCommand('dw-manager.importSetup', () => importSetup(context)),
+        vscode.commands.registerCommand('dw-manager.switchCodeVersion', () => switchCurrentSandboxCodeVersion(context)),
+        vscode.commands.registerCommand('dw-manager.deleteSandboxFromView', (item: SandboxItem) => deleteSandboxFromView(context, item)),
+        vscode.commands.registerCommand('dwManagerView.refresh', () => sandboxProvider.refresh()),
+        vscode.commands.registerCommand('dw-manager.addNewSandbox', () => detailedSandboxSelection(context)),
+        vscode.commands.registerCommand('dw-manager.changeCartridges', (item: SandboxItem) => changeCartridges(context, item)),
+        vscode.commands.registerCommand('dw-manager.changeUser', (item: SandboxItem) => changeUser(context, item)),
+        vscode.commands.registerCommand('dw-manager.editSandboxFromView', (item: SandboxItem) => editSandboxFromView(item)),
+        vscode.commands.registerCommand('dw-manager.changeSavedPassword', () => changeSavedPassword(context)),
+        vscode.commands.registerCommand('dw-manager.activateSandbox', (sandbox) => activateSandbox(sandbox)),
+        vscode.commands.registerCommand('dw-manager.enableProphetUpload', () => enableProphetUpload()),
+        vscode.commands.registerCommand('dw-manager.disableProphetUpload', () => disableProphetUpload()),
+        vscode.commands.registerCommand('dw-manager.refreshCartridges', () => cartridgesProvider.refresh()),
+        vscode.commands.registerCommand('dw-manager.openCartridge', (item: CartridgeItem) => {
             vscode.commands.executeCommand('vscode.openFolder', item.cartridgeRoot, { forceNewWindow: false });
         }),
-        vscode.commands.registerCommand('dw-env-switcher.revealCartridgeInExplorer', async (item: CartridgeItem) => {
+        vscode.commands.registerCommand('dw-manager.revealCartridgeInExplorer', async (item: CartridgeItem) => {
             await vscode.commands.executeCommand('revealInExplorer', item.cartridgeRoot);
         }),
-        vscode.commands.registerCommand('dw-env-switcher.refreshLogs', () => logsProvider.refresh()),
-        vscode.commands.registerCommand('dw-env-switcher.tailLog', (item: LogFileItem) => logsProvider.tailLog(item)),
-        vscode.commands.registerCommand('dw-env-switcher.stopTailingLog', (item: LogFileItem) => logsProvider.stopTailing(item))
+        vscode.commands.registerCommand('dw-manager.refreshLogs', () => logsProvider.refresh()),
+        vscode.commands.registerCommand('dw-manager.tailLog', (item: LogFileItem) => logsProvider.tailLog(item)),
+        vscode.commands.registerCommand('dw-manager.stopTailingLog', (item: LogFileItem) => logsProvider.stopTailing(item))
     );
 }
 

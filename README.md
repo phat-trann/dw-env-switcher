@@ -1,155 +1,170 @@
-# DW Environment Switcher
+# DW Manager
 
-**Author:** Ivaylo Trepetanov  
-**License:** MIT
+Manage Salesforce B2C Commerce Cloud sandbox configurations in Visual Studio Code. The extension writes `dw.json` for the selected sandbox, browses local cartridges, and tails remote logs over WebDAV.
 
----
+**Maintainer:** Ferb
 
-## About
+**Based on:** Ivaylo Trepetanov's DW Environment Switcher
 
-This extension is designed to improve the developer workflow when working with **Salesforce Commerce Cloud** and **Prophet Debugger** inside Visual Studio Code.
-
-Easily manage multiple sandbox environments, securely store credentials, dynamically select cartridges, and export or import sandbox configurations between different workstations.
-
-✅ **NEW:**  
-- "Switch Current Sandbox Code Version" command for fast version switching.  
-- "Change Saved Password" command to easily update passwords globally and for all sandboxes.  
-- **Activity Bar View with sandbox management actions (edit, change cartridges/user, delete)**  
-- **Clickable sandbox entries to activate sandbox directly from the view**  
-- **Visual indicator (green check ✅ for active, red circle 🔴 for inactive sandboxes)**
-
----
+**License:** MIT; see [LICENSE](LICENSE).
 
 ## Features
 
-- 🌐 Manage multiple Salesforce Commerce Cloud sandboxes.
-- 🔐 Securely store global usernames and passwords.
-- 🔄 Quickly switch between hostnames and code versions.
-- 🛠 Save and overwrite sandbox configurations.
-- 📦 Dynamically select cartridges from your workspace.
-- 🚮 Delete saved users and sandboxes easily.
-- 📥 Import and 📤 export sandbox setups with ease.
-- ✅ **Switch current sandbox code version without changing other settings.**
-- 🔑 **Change saved password for users globally and update all sandboxes and active sandbox.**
-- 📌 **Activity Bar view for easy sandbox access and editing.**
-- 🔴 ✅ **Easily activate sandboxes by clicking them in the view (red = inactive, green = active)**.
-- 📜 **Live-tail sandbox log files (error/warn/info/debug) straight from the Activity Bar, no Business Manager needed.**
-- 🐞 Seamless integration with Prophet Debugger setups.
-
----
-
-## Activity Bar View
-
-DW Environment Switcher adds a new icon to the Activity Bar.
-
-From the **Sandboxes view**, you can:
-
-- ✅ **See which sandbox is active (green check icon).**
-- 🔴 **See inactive sandboxes (red circle icon with "Activate" label).**
-- 📌 **Activate sandbox by clicking directly on it in the list.**
-- ✏️ **Edit sandbox details, change cartridges/code version/user, toggle Prophet upload, or delete** — click the `Sandbox Actions` inline button (or right-click the sandbox) to open the actions submenu right at the item.
-- 🔑 **Change saved password** (use command palette `Change Saved Password`).
-
-This makes sandbox management fast and intuitive — no need to use command palette for most operations.
-
-From the **Cartridges view**, you can:
-
-- 📦 **Browse every cartridge discovered in the workspace as an expandable tree**, drilling into its folders/files with the same icons as the built-in Explorer.
-- 📄 **Click a file to open it directly** in the editor.
-- 🗂️ **Open a cartridge as its own workspace folder** or **reveal it in the Explorer** via the inline/right-click actions on the cartridge root.
-- 🔄 **Refresh** the list from the view title bar, or let it refresh automatically when cartridge folders or `.project` files change.
-
-From the **Logs view**, you can:
-
-- 📜 **See every log file** (`error-*.log`, `warn-*.log`, `info-*.log`, `debug-*.log`, ...) available on the currently active sandbox, fetched over WebDAV using its saved credentials.
-- ▶️ **Click a log file to start live-tailing it** — its content streams into a dedicated Output Channel and keeps appending new lines as they're written on the sandbox, similar to Prophet Debugger's log tail.
-- ⏹️ **Right-click (or use the inline button on) a file that's currently tailing to stop it.**
-- 🔄 **Refresh** the file list from the view title bar. It also refreshes automatically whenever you activate, add, edit, or change credentials for a sandbox.
-
-> Requires a currently active sandbox (`dw.json`) with a saved hostname, username, and password that has WebDAV access to `Sites/Logs/` on the instance.
-
----
-
-## Commands Available
-
-- `Select Sandbox`: Select an environment from `dw-envs.json`.
-- `Select Sandbox with Details`: Create a sandbox config manually (hostname, username, password, code version, cartridges).
-- `Switch Current Sandbox Code Version`: Change only the `code-version` of the current sandbox.
-- `Change Saved Password`: Update saved passwords globally and in all related sandboxes.
-- `Delete Saved Username`: Remove a saved username and password.
-- `Delete Saved Sandbox`: Remove a saved sandbox from `dw-envs.json`.
-- `Export Sandbox Setup`: Backup `dw.json`, `dw-envs.json` and global state to a zip file.
-- `Import Sandbox Setup`: Restore sandbox setup from a zip file.
-
----
-
-## How to Use
-
-1. Open your Commerce Cloud project in VS Code.
-2. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac) or use the **Activity Bar view**.
-3. Use sandbox commands or right-click on sandboxes in the view to manage them.
-4. Select or create sandbox environments, choose cartridges, or switch code versions easily.
-5. **Click on any inactive sandbox (red circle 🔴) to instantly activate it.**
-
-### Switching Code Version
-
-Use `Switch Current Sandbox Code Version` command to:
-
-- Quickly change the `code-version` for your current sandbox (`dw.json`).
-- Automatically update `dw-envs.json` if the sandbox exists there.
-
-No need to reselect hostname or username — just pick or enter the new code version.
-
-### Change Saved Password
-
-Use `Change Saved Password` command to:
-
-- Select a saved username from the list.
-- Enter a new password securely.
-- Update the password globally and in all sandboxes (`dw-envs.json` and `dw.json` if active sandbox matches).
-
-This is useful when passwords expire or need to be rotated.
-
----
-
-### Export Setup
-
-- Use `Export Sandbox Setup` to save your environment into a zip file.
-- Exports `dw.json`, `dw-envs.json`, and global state (credentials, hostnames, usernames, code versions).
-- Useful for backups or transferring environments between machines.
-
-### Import Setup
-
-- Use `Import Sandbox Setup` to restore sandbox configurations.
-- Select the exported zip file and the extension will apply the configurations to your current workspace.
-
----
-
-## Cartridge Selection
-
-When configuring or switching sandboxes (using `Select Sandbox with Details`):
-
-1. Choose **Yes** when prompted to select cartridges.
-2. The extension lists valid cartridges from the workspace (folders with `.project` and `cartridges` folder).
-3. Pick cartridges to associate with the sandbox. These will be added to `dw.json`.
-
----
+- Save named sandboxes in `dw-envs.json` and activate one by writing `dw.json`.
+- Change a sandbox's hostname, credentials, code version, and cartridge selection.
+- Browse discovered cartridges and open their files from an expandable tree.
+- List sandbox `.log` files and stream their contents into Output Channels.
+- Enable or disable Prophet Debugger upload for the workspace.
+- Export and import workspace configuration and saved VS Code state as a ZIP.
 
 ## Requirements
 
-- VS Code with Prophet Debugger installed.
-- Project folder with `dw.json` and/or `dw-envs.json` (automatically created if missing).
-- Node.js installed locally (VS Code extension dependencies only).
+- VS Code **1.80.0 or later**, as declared in the extension manifest.
+- An open local workspace folder. Sandbox configuration uses the **first workspace folder** in a multi-root workspace.
+- Sandbox credentials with access to `Sites/Logs/` for the Logs view.
+- Prophet Debugger if you want Prophet upload/debugging integration. Sandbox management, cartridge browsing, and log viewing are separate features.
 
----
+Node.js is needed to build from source; it does not need to be installed separately to use the packaged extension in VS Code.
 
-## Extension Settings
+## Install from VSIX
 
-No configuration required.  
-All credentials and sandbox environments are stored securely in VS Code global state.
+Build the extension as described below, then open the Extensions view, select **… → Install from VSIX…**, and choose the generated file. You can also use the VS Code CLI:
 
----
+```sh
+code --install-extension dist/dw-manager-1.0.1.vsix
+```
 
-## License
+The output filename follows the `name` and `version` in `package.json`.
 
-MIT © 2025 Ivaylo Trepetanov
+## Manage sandboxes
+
+1. Open the DW Manager icon in the Activity Bar.
+2. In **Sandboxes**, click **Add New Sandbox**, or run that command from the Command Palette.
+3. Enter or select a hostname, username, password, code version, and sandbox name. Optionally select cartridges.
+4. The extension saves the entry in `dw-envs.json` and activates it in `dw.json`.
+5. Click a sandbox to activate its saved configuration. The green check marks the active entry; other entries use a red inactive icon.
+6. Use the item's **Sandbox Actions** menu to edit it, change cartridges/user/code version, toggle Prophet upload, or delete it.
+
+`Select Sandbox` lets you choose a saved entry and optionally choose cartridges for the current `dw.json`. `Select Sandbox (Detailed)` opens the configuration flow; **Edit Sandbox** uses that same flow with the existing entry.
+
+**Change Code Version** edits the currently active `dw.json` and updates a saved entry with matching hostname and username. **Change Saved Password** updates saved entries and the active config with the selected username. Removing a saved sandbox does not delete the active `dw.json`.
+
+Changing a saved sandbox's cartridges or user also writes that sandbox into `dw.json`, making it the active configuration.
+
+### Configuration format
+
+`dw-envs.json` contains a `sandboxes` array:
+
+```json
+{
+  "sandboxes": [
+    {
+      "name": "Development",
+      "hostname": "example.sandbox.example.com",
+      "code-version": "version1",
+      "username": "developer@example.com",
+      "password": "replace-with-your-password",
+      "cartridges": ["app_storefront_base", "app_custom"]
+    }
+  ]
+}
+```
+
+`dw.json` contains the selected sandbox object itself. The code uses **`code-version`** and a **`cartridges` array**; it does not use `version` or `cartridgesPath`.
+
+Credentials are stored in these JSON files and, for some commands, in VS Code `globalState`. The current implementation does **not** use VS Code `SecretStorage` or encrypt exported ZIP files. Passwords entered through a masked input are still written to the configuration files. Keep files and exported archives containing real credentials private.
+
+## Browse cartridges
+
+The **Cartridges** view scans workspace `.project` files with the Demandware nature `com.demandware.studio.core.beehiveNature`. It recognizes projects containing `cartridge/`, children under `cartridges/` that contain `cartridge/` or end in `_cartridge`, and project directories ending in `_cartridge`. It also merges fallback matches for cartridge folder layouts.
+
+Expand cartridge roots to browse directories and files; click a file to open it. **Open Cartridge** opens that cartridge as the workspace in the current window. **Reveal Cartridge in Explorer** reveals its root. Refresh is available in the title bar; filesystem watchers also refresh on matching cartridge and `.project` changes.
+
+The tree discovers across the workspace. Sandbox cartridge selection filters discoveries to the first workspace folder and saves folder names, rather than absolute paths.
+
+## Tail sandbox logs
+
+The **Logs** view uses credentials from the active `dw.json` to request:
+
+```text
+https://<hostname>/on/demandware.servlet/webdav/Sites/Logs/
+```
+
+Click a file to start a dedicated `SFCC Log: <filename>` Output Channel. The first request retrieves the whole log; subsequent requests poll every **4 seconds** and request bytes after the last known offset. **Stop Tailing** stops and disposes the session; clicking an already running file reveals its existing channel.
+
+The list refreshes when requested by sandbox actions or the refresh button. A refresh does not retarget sessions that are already tailing: stop the old session before starting the same filename on another sandbox.
+
+## Prophet upload
+
+**DW Manager: Enable Upload (Prophet)** and **DW Manager: Disable Upload (Prophet)** set `extension.prophet.upload.enabled` at workspace scope. They control Prophet's setting; this extension does not implement a cartridge uploader.
+
+## Export and import
+
+**Export Sandbox Setup** requires both `dw.json` and `dw-envs.json`. Choose an output folder; it creates `sandbox_config.zip` containing those files and `globalState.json` with the exported credential/history keys.
+
+**Import Sandbox Setup** extracts the ZIP beside the chosen archive, copies available configuration files into the first workspace folder, restores keys from `globalState.json`, and refreshes the Sandboxes and Logs views. Existing destination configurations are overwritten. Exported archives contain credentials in plaintext.
+
+## Commands
+
+These titles match `package.json`:
+
+| Area | Command Palette titles |
+| --- | --- |
+| Sandbox selection | Select Sandbox; Select Sandbox (Detailed); Add New Sandbox |
+| Sandbox editing | Edit Sandbox; Change Cartridges; Change Code Version; Change User |
+| Saved entries | Delete Saved Sandbox; Delete Sandbox From View; Delete Saved Username; Change Saved Password |
+| Backup | Export Sandbox Setup; Import Sandbox Setup |
+| Prophet | DW Manager: Enable Upload (Prophet); DW Manager: Disable Upload (Prophet) |
+| Views | Refresh Sandbox View; Refresh Cartridges; Refresh Logs |
+| Cartridges | Open Cartridge; Reveal Cartridge in Explorer |
+| Logs | Tail Log; Stop Tailing |
+
+Commands that act on a sandbox, cartridge, or log item should be used from that item's tree menu because they require the selected item argument.
+
+## Extension identity
+
+The package name is `dw-manager`, the extension ID is `Ferb.dw-manager`, and its display name is **DW Manager**. Commands use `dw-manager.*` (plus the sandbox refresh command `dwManagerView.refresh`); tree views use the `dwManager` identifiers defined in `package.json`.
+
+Workspace configuration still uses `dw.json` and `dw-envs.json`. VS Code keeps `globalState` separately for each extension ID, so histories from an installation with the previous name can be transferred using Export/Import Sandbox Setup. Custom keybindings should use the renamed command IDs.
+
+## Source and generated runtime
+
+Edit TypeScript in `src/`. The `out/` directory is generated:
+
+- `npm run compile` compiles the source modules into JavaScript under `out/`.
+- `npm run bundle` builds `src/extension.ts` and its dependencies into `out/extension.js`.
+- VS Code loads `out/extension.js` through the `main` field in `package.json`; the F5 development host also runs generated JavaScript from `out/`.
+- VSIX packaging includes the bundled `out/extension.js`. Source `.ts` files are not required at runtime.
+
+Do not edit `out/` by hand; builds overwrite it. `out/` can be regenerated from source. If it is removed, compile before F5 or run `npm run build:vsix` to regenerate the packaged runtime. Generated `out/` files are excluded from Git by `.gitignore`; build them locally before running the extension.
+
+## Develop and build
+
+Use the Node version in `.nvmrc`. The packaging tool requires **Node.js 22 or later**.
+
+```sh
+nvm use
+npm install
+npm run compile
+npm test
+```
+
+Press **F5** to launch the configured Extension Development Host. `npm run watch` recompiles TypeScript during development.
+
+To build an installable VSIX after installing dependencies:
+
+```sh
+npm run build
+```
+
+`npm run build:vsix` is the direct equivalent. A build automatically compiles and bundles the source before packaging; separate compile/bundle commands are not required.
+
+The script uses the local `@vscode/vsce` dependency and writes `dist/dw-manager-<version>.vsix`. VSCE invokes `vscode:prepublish`, which type-checks with TypeScript and bundles the extension with esbuild. Runtime dependencies are bundled; `.vscodeignore` includes only the manifest, runtime bundle, README, license, and icons. Local `dw.json`, `dw-envs.json`, source files, tests, and previous VSIX files are excluded.
+
+This command packages locally and does not publish to the Marketplace or require a publisher access token. See the [official VS Code packaging documentation](https://code.visualstudio.com/api/working-with-extensions/publishing-extension).
+
+For the implementation map, persistence rules, and current limitations, read [AI_CONTEXT.md](AI_CONTEXT.md).
+
+## Versioning
+
+Every project update bumps the version once according to its impact: PATCH for compatible fixes, internal changes, documentation, or tooling; MINOR for compatible new features; MAJOR for breaking behavior, command IDs, or data formats. Rebuilding an unchanged project does not change its version. See [AGENTS.md](AGENTS.md) for the project instructions.
