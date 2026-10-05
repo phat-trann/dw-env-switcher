@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { SandboxConfig } from '../types';
+import { ActiveConfig } from '../types';
 import { readJsonOrWarn } from '../utils/jsonFile';
 import { listLogFiles } from './webdavClient';
 import { LogTailSession } from './tailSession';
@@ -37,14 +37,14 @@ export class LogsTreeDataProvider implements vscode.TreeDataProvider<LogFileItem
         return element;
     }
 
-    private getActiveConfig(): SandboxConfig | undefined {
+    private getActiveConfig(): ActiveConfig | undefined {
         const workspace = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
         if (!workspace) return undefined;
 
         const dwPath = path.join(workspace, 'dw.json');
         if (!fs.existsSync(dwPath)) return undefined;
 
-        return readJsonOrWarn<SandboxConfig>(dwPath, 'dw.json');
+        return readJsonOrWarn<ActiveConfig>(dwPath, 'dw.json');
     }
 
     async getChildren(): Promise<LogFileItem[]> {
@@ -55,7 +55,7 @@ export class LogsTreeDataProvider implements vscode.TreeDataProvider<LogFileItem
             const files = await listLogFiles(config.hostname, config.username, config.password);
             return files.map(fileName => new LogFileItem(fileName, this.sessions.has(fileName)));
         } catch (err) {
-            vscode.window.showErrorMessage(`Failed to load sandbox logs: ${err instanceof Error ? err.message : String(err)}`);
+            vscode.window.showErrorMessage(`Failed to load environment logs: ${err instanceof Error ? err.message : String(err)}`);
             return [];
         }
     }
@@ -69,7 +69,7 @@ export class LogsTreeDataProvider implements vscode.TreeDataProvider<LogFileItem
 
         const config = this.getActiveConfig();
         if (!config?.hostname || !config.username || !config.password) {
-            vscode.window.showErrorMessage('No active sandbox with saved credentials found.');
+            vscode.window.showErrorMessage('No active Environment with credentials found.');
             return;
         }
 

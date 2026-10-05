@@ -1,8 +1,8 @@
 {
   "name": "dw-manager",
   "displayName": "DW Manager",
-  "description": "Easily switch and manage Salesforce sandbox environments, save workspace configurations, and export/import setups.",
-  "version": "1.0.1",
+  "description": "Manage Salesforce Commerce Cloud Environments and Sites, combine their configuration, browse cartridges, and tail logs.",
+  "version": "2.0.0",
   "publisher": "Ferb",
   "repository": {
     "type": "git",
@@ -16,57 +16,55 @@
   },
   "keywords": [
     "salesforce",
-    "sandbox",
     "environment",
     "manager",
     "dw",
     "credentials",
     "developer",
-    "commerce cloud"
+    "commerce cloud",
+    "sites"
   ],
   "categories": [
     "Other",
     "Debuggers"
   ],
   "activationEvents": [
-    "onCommand:dw-manager.selectSandbox",
-    "onCommand:dw-manager.selectSandboxWithDetails",
-    "onCommand:dw-manager.deleteSavedUsername",
-    "onCommand:dw-manager.deleteSavedSandbox",
+    "onView:dwManagerEnvironmentsView",
+    "onView:dwManagerSitesView",
+    "onView:dwManagerCartridgesView",
+    "onView:dwManagerLogsView",
+    "onCommand:dw-manager.selectEnvironment",
+    "onCommand:dw-manager.selectSite",
+    "onCommand:dw-manager.createEnvironment",
+    "onCommand:dw-manager.createSite",
+    "onCommand:dw-manager.editEnvironment",
+    "onCommand:dw-manager.editSite",
+    "onCommand:dw-manager.deleteEnvironment",
+    "onCommand:dw-manager.deleteSite",
+    "onCommand:dw-manager.changeCartridges",
+    "onCommand:dw-manager.refreshConfiguration",
     "onCommand:dw-manager.exportSetup",
     "onCommand:dw-manager.importSetup",
-    "onCommand:dw-manager.switchCodeVersion",
-    "onCommand:dw-manager.deleteSandboxFromView",
-    "onCommand:dwManagerView.refresh",
-    "onCommand:dw-manager.addNewSandbox",
-    "onCommand:dw-manager.changeCartridges",
-    "onCommand:dw-manager.changeUser",
-    "onCommand:dw-manager.editSandboxFromView",
-    "onCommand:dw-manager.changeSavedPassword",
     "onCommand:dw-manager.enableProphetUpload",
     "onCommand:dw-manager.disableProphetUpload",
-    "onView:dwManagerCartridgesView",
     "onCommand:dw-manager.refreshCartridges",
     "onCommand:dw-manager.openCartridge",
     "onCommand:dw-manager.revealCartridgeInExplorer",
-    "onView:dwManagerLogsView",
     "onCommand:dw-manager.refreshLogs",
     "onCommand:dw-manager.tailLog",
     "onCommand:dw-manager.stopTailingLog"
   ],
   "contributes": {
-    "submenus": [
-      {
-        "id": "dw-manager.sandboxActionsMenu",
-        "label": "Sandbox Actions",
-        "icon": "$(ellipsis)"
-      }
-    ],
     "menus": {
       "view/title": [
         {
-          "command": "dw-manager.addNewSandbox",
-          "when": "view == dwManagerView",
+          "command": "dw-manager.createEnvironment",
+          "when": "view == dwManagerEnvironmentsView",
+          "group": "navigation"
+        },
+        {
+          "command": "dw-manager.createSite",
+          "when": "view == dwManagerSitesView",
           "group": "navigation"
         },
         {
@@ -78,13 +76,43 @@
           "command": "dw-manager.refreshLogs",
           "when": "view == dwManagerLogsView",
           "group": "navigation"
+        },
+        {
+          "command": "dw-manager.refreshConfiguration",
+          "when": "view == dwManagerEnvironmentsView",
+          "group": "navigation"
+        },
+        {
+          "command": "dw-manager.refreshConfiguration",
+          "when": "view == dwManagerSitesView",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "submenu": "dw-manager.sandboxActionsMenu",
-          "when": "view == dwManagerView && viewItem == sandbox",
+          "command": "dw-manager.editEnvironment",
+          "when": "viewItem == environment",
           "group": "inline"
+        },
+        {
+          "command": "dw-manager.deleteEnvironment",
+          "when": "viewItem == environment",
+          "group": "2_edit"
+        },
+        {
+          "command": "dw-manager.editSite",
+          "when": "viewItem == site",
+          "group": "inline"
+        },
+        {
+          "command": "dw-manager.deleteSite",
+          "when": "viewItem == site",
+          "group": "2_edit"
+        },
+        {
+          "command": "dw-manager.changeCartridges",
+          "when": "viewItem == site",
+          "group": "2_edit"
         },
         {
           "command": "dw-manager.openCartridge",
@@ -102,41 +130,42 @@
           "group": "inline"
         }
       ],
-      "dw-manager.sandboxActionsMenu": [
+      "commandPalette": [
         {
-          "command": "dw-manager.editSandboxFromView",
-          "when": "view == dwManagerView && viewItem == sandbox",
-          "group": "1_edit@1"
+          "command": "dw-manager.editEnvironment",
+          "when": "false"
+        },
+        {
+          "command": "dw-manager.editSite",
+          "when": "false"
+        },
+        {
+          "command": "dw-manager.deleteEnvironment",
+          "when": "false"
+        },
+        {
+          "command": "dw-manager.deleteSite",
+          "when": "false"
         },
         {
           "command": "dw-manager.changeCartridges",
-          "when": "view == dwManagerView && viewItem == sandbox",
-          "group": "1_edit@2"
+          "when": "false"
         },
         {
-          "command": "dw-manager.switchCodeVersion",
-          "when": "view == dwManagerView && viewItem == sandbox",
-          "group": "1_edit@3"
+          "command": "dw-manager.openCartridge",
+          "when": "false"
         },
         {
-          "command": "dw-manager.changeUser",
-          "when": "view == dwManagerView && viewItem == sandbox",
-          "group": "1_edit@4"
+          "command": "dw-manager.revealCartridgeInExplorer",
+          "when": "false"
         },
         {
-          "command": "dw-manager.enableProphetUpload",
-          "when": "view == dwManagerView && viewItem == sandbox",
-          "group": "2_prophet@1"
+          "command": "dw-manager.tailLog",
+          "when": "false"
         },
         {
-          "command": "dw-manager.disableProphetUpload",
-          "when": "view == dwManagerView && viewItem == sandbox",
-          "group": "2_prophet@2"
-        },
-        {
-          "command": "dw-manager.deleteSandboxFromView",
-          "when": "view == dwManagerView && viewItem == sandbox",
-          "group": "3_danger@1"
+          "command": "dw-manager.stopTailingLog",
+          "when": "false"
         }
       ]
     },
@@ -152,8 +181,12 @@
     "views": {
       "dwManager": [
         {
-          "id": "dwManagerView",
-          "name": "Sandboxes"
+          "id": "dwManagerEnvironmentsView",
+          "name": "Environments"
+        },
+        {
+          "id": "dwManagerSitesView",
+          "name": "Sites"
         },
         {
           "id": "dwManagerCartridgesView",
@@ -167,60 +200,55 @@
     },
     "commands": [
       {
-        "command": "dw-manager.selectSandbox",
-        "title": "Select Sandbox"
+        "command": "dw-manager.selectEnvironment",
+        "title": "Select Environment"
       },
       {
-        "command": "dw-manager.selectSandboxWithDetails",
-        "title": "Select Sandbox (Detailed)"
+        "command": "dw-manager.selectSite",
+        "title": "Select Site"
       },
       {
-        "command": "dw-manager.editSandboxFromView",
-        "title": "Edit Sandbox"
+        "command": "dw-manager.createEnvironment",
+        "title": "Create Environment",
+        "icon": "$(add)"
+      },
+      {
+        "command": "dw-manager.createSite",
+        "title": "Create Site",
+        "icon": "$(add)"
+      },
+      {
+        "command": "dw-manager.editEnvironment",
+        "title": "Edit Environment"
+      },
+      {
+        "command": "dw-manager.editSite",
+        "title": "Edit Site"
+      },
+      {
+        "command": "dw-manager.deleteEnvironment",
+        "title": "Delete Environment"
+      },
+      {
+        "command": "dw-manager.deleteSite",
+        "title": "Delete Site"
       },
       {
         "command": "dw-manager.changeCartridges",
-        "title": "Change Cartridges"
+        "title": "Change Site Cartridges"
       },
       {
-        "command": "dw-manager.switchCodeVersion",
-        "title": "Change Code Version"
-      },
-      {
-        "command": "dw-manager.changeUser",
-        "title": "Change User"
-      },
-      {
-        "command": "dw-manager.deleteSandboxFromView",
-        "title": "Delete Sandbox From View"
-      },
-      {
-        "command": "dw-manager.deleteSavedSandbox",
-        "title": "Delete Saved Sandbox"
+        "command": "dw-manager.refreshConfiguration",
+        "title": "Refresh Configuration",
+        "icon": "$(refresh)"
       },
       {
         "command": "dw-manager.exportSetup",
-        "title": "Export Sandbox Setup"
+        "title": "Export DW Manager Setup"
       },
       {
         "command": "dw-manager.importSetup",
-        "title": "Import Sandbox Setup"
-      },
-      {
-        "command": "dw-manager.addNewSandbox",
-        "title": "Add New Sandbox"
-      },
-      {
-        "command": "dw-manager.deleteSavedUsername",
-        "title": "Delete Saved Username"
-      },
-      {
-        "command": "dwManagerView.refresh",
-        "title": "Refresh Sandbox View"
-      },
-      {
-        "command": "dw-manager.changeSavedPassword",
-        "title": "Change Saved Password"
+        "title": "Import DW Manager Setup"
       },
       {
         "command": "dw-manager.enableProphetUpload",
@@ -232,7 +260,8 @@
       },
       {
         "command": "dw-manager.refreshCartridges",
-        "title": "Refresh Cartridges"
+        "title": "Refresh Cartridges",
+        "icon": "$(refresh)"
       },
       {
         "command": "dw-manager.openCartridge",
@@ -244,7 +273,8 @@
       },
       {
         "command": "dw-manager.refreshLogs",
-        "title": "Refresh Logs"
+        "title": "Refresh Logs",
+        "icon": "$(refresh)"
       },
       {
         "command": "dw-manager.tailLog",

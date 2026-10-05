@@ -1,89 +1,53 @@
 import * as vscode from 'vscode';
-import { SandboxTreeDataProvider, SandboxItem } from './sandboxes/tree';
+import { ConfigManager } from './config/manager';
+import { ConfigTreeProvider, EntryItem } from './config/tree';
 import { CartridgesTreeDataProvider, CartridgeItem } from './cartridges/tree';
 import { LogsTreeDataProvider, LogFileItem } from './logs/tree';
-import { simpleSandboxSelection, detailedSandboxSelection } from './sandboxes/selection';
-import {
-    deleteSavedUsername,
-    deleteSavedSandbox,
-    deleteSandboxFromView,
-    changeCartridges,
-    switchCurrentSandboxCodeVersion,
-    changeUser,
-    changeSavedPassword,
-    editSandboxFromView,
-    activateSandbox
-} from './sandboxes/actions';
 import { exportSetup, importSetup } from './io/exportImport';
 import { enableProphetUpload, disableProphetUpload } from './prophet';
 
-export {
-    pickOrEnter
-} from './utils/pick';
-export {
-    simpleSandboxSelection,
-    detailedSandboxSelection
-} from './sandboxes/selection';
-export {
-    SandboxTreeDataProvider,
-    SandboxItem,
-    SandboxDetailItem
-} from './sandboxes/tree';
-export {
-    deleteSavedUsername,
-    deleteSavedSandbox,
-    deleteSandboxFromView,
-    changeCartridges,
-    switchCurrentSandboxCodeVersion,
-    changeUser,
-    changeSavedPassword,
-    editSandboxFromView
-} from './sandboxes/actions';
-export { exportSetup, importSetup } from './io/exportImport';
-
 export function activate(context: vscode.ExtensionContext) {
-    // Sandboxes panel
-    const sandboxProvider = new SandboxTreeDataProvider(context);
-    vscode.window.registerTreeDataProvider('dwManagerView', sandboxProvider);
-
-    // Cartridges panel
-    const cartridgesProvider = new CartridgesTreeDataProvider(context);
-    vscode.window.registerTreeDataProvider('dwManagerCartridgesView', cartridgesProvider);
-
-    // Logs panel — live-tails sandbox log files over WebDAV
-    const logsProvider = new LogsTreeDataProvider();
-    vscode.window.registerTreeDataProvider('dwManagerLogsView', logsProvider);
-
-    context.subscriptions.push(
-        { dispose: () => logsProvider.disposeAll() },
-        vscode.commands.registerCommand('dw-manager.selectSandbox', () => simpleSandboxSelection(context)),
-        vscode.commands.registerCommand('dw-manager.selectSandboxWithDetails', (sandboxName) => detailedSandboxSelection(context, sandboxName)),
-        vscode.commands.registerCommand('dw-manager.deleteSavedUsername', () => deleteSavedUsername(context)),
-        vscode.commands.registerCommand('dw-manager.deleteSavedSandbox', () => deleteSavedSandbox(context)),
-        vscode.commands.registerCommand('dw-manager.exportSetup', () => exportSetup(context)),
-        vscode.commands.registerCommand('dw-manager.importSetup', () => importSetup(context)),
-        vscode.commands.registerCommand('dw-manager.switchCodeVersion', () => switchCurrentSandboxCodeVersion(context)),
-        vscode.commands.registerCommand('dw-manager.deleteSandboxFromView', (item: SandboxItem) => deleteSandboxFromView(context, item)),
-        vscode.commands.registerCommand('dwManagerView.refresh', () => sandboxProvider.refresh()),
-        vscode.commands.registerCommand('dw-manager.addNewSandbox', () => detailedSandboxSelection(context)),
-        vscode.commands.registerCommand('dw-manager.changeCartridges', (item: SandboxItem) => changeCartridges(context, item)),
-        vscode.commands.registerCommand('dw-manager.changeUser', (item: SandboxItem) => changeUser(context, item)),
-        vscode.commands.registerCommand('dw-manager.editSandboxFromView', (item: SandboxItem) => editSandboxFromView(item)),
-        vscode.commands.registerCommand('dw-manager.changeSavedPassword', () => changeSavedPassword(context)),
-        vscode.commands.registerCommand('dw-manager.activateSandbox', (sandbox) => activateSandbox(sandbox)),
-        vscode.commands.registerCommand('dw-manager.enableProphetUpload', () => enableProphetUpload()),
-        vscode.commands.registerCommand('dw-manager.disableProphetUpload', () => disableProphetUpload()),
-        vscode.commands.registerCommand('dw-manager.refreshCartridges', () => cartridgesProvider.refresh()),
-        vscode.commands.registerCommand('dw-manager.openCartridge', (item: CartridgeItem) => {
-            vscode.commands.executeCommand('vscode.openFolder', item.cartridgeRoot, { forceNewWindow: false });
+    const manager = new ConfigManager();
+    const cartridges = new CartridgesTreeDataProvider(context);
+    const logs = new LogsTreeDataProvider();
+    let logTarget: string | undefined;
+    context.subscriptions.push(manager,
+        vscode.window.registerTreeDataProvider('dwManagerEnvironmentsView', new ConfigTreeProvider(manager, 'environment')),
+        vscode.window.registerTreeDataProvider('dwManagerSitesView', new ConfigTreeProvider(manager, 'site')),
+        vscode.window.registerTreeDataProvider('dwManagerCartridgesView', cartridges),
+        vscode.window.registerTreeDataProvider('dwManagerLogsView', logs),
+        manager.onDidChange(() => {
+            const active = manager.store?.readActive();
+            const target = JSON.stringify([active?.hostname, active?.username, active?.password]);
+            if (target !== logTarget) { logs.disposeAll(); logTarget = target; }
+            logs.refresh();
         }),
-        vscode.commands.registerCommand('dw-manager.revealCartridgeInExplorer', async (item: CartridgeItem) => {
-            await vscode.commands.executeCommand('revealInExplorer', item.cartridgeRoot);
-        }),
-        vscode.commands.registerCommand('dw-manager.refreshLogs', () => logsProvider.refresh()),
-        vscode.commands.registerCommand('dw-manager.tailLog', (item: LogFileItem) => logsProvider.tailLog(item)),
-        vscode.commands.registerCommand('dw-manager.stopTailingLog', (item: LogFileItem) => logsProvider.stopTailing(item))
+        vscode.workspace.onDidChangeWorkspaceFolders(() => manager.initialize()),
+        { dispose: () => logs.disposeAll() }
     );
+    const register = (id: string, callback: (...args: any[]) => unknown) =>
+        context.subscriptions.push(vscode.commands.registerCommand(`dw-manager.${id}`, callback));
+    register('selectEnvironment', (item?: EntryItem) => manager.run(() => manager.select('environment', item?.id)));
+    register('selectSite', (item?: EntryItem) => manager.run(() => manager.select('site', item?.id)));
+    register('createEnvironment', () => manager.run(() => manager.editEnvironment()));
+    register('createSite', () => manager.run(() => manager.editSite()));
+    register('editEnvironment', (item?: EntryItem) => manager.run(() => manager.editEnvironment(item?.id)));
+    register('editSite', (item?: EntryItem) => manager.run(() => manager.editSite(item?.id)));
+    register('deleteEnvironment', (item: EntryItem) => manager.run(() => manager.remove(item)));
+    register('deleteSite', (item: EntryItem) => manager.run(() => manager.remove(item)));
+    register('changeCartridges', (item: EntryItem) => manager.run(() => manager.chooseCartridges(item.id)));
+    register('refreshConfiguration', () => manager.refresh());
+    register('exportSetup', () => exportSetup(context));
+    register('importSetup', () => importSetup(context).then(() => manager.initialize()));
+    register('enableProphetUpload', enableProphetUpload);
+    register('disableProphetUpload', disableProphetUpload);
+    register('refreshCartridges', () => cartridges.refresh());
+    register('openCartridge', (item: CartridgeItem) => vscode.commands.executeCommand('vscode.openFolder', item.cartridgeRoot, { forceNewWindow: false }));
+    register('revealCartridgeInExplorer', (item: CartridgeItem) => vscode.commands.executeCommand('revealInExplorer', item.cartridgeRoot));
+    register('refreshLogs', () => logs.refresh());
+    register('tailLog', (item: LogFileItem) => logs.tailLog(item));
+    register('stopTailingLog', (item: LogFileItem) => logs.stopTailing(item));
+    manager.initialize();
 }
 
 export function deactivate() {}
