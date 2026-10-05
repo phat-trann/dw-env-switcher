@@ -1,0 +1,40 @@
+# Exclude all files from node_modules
+node_modules/*
+
+# Exclude all files in the src directory (because TypeScript code will be compiled/bundled)
+src/*
+
+# Exclude test files and directories
+test/*
+*.test.ts
+*.spec.ts
+
+# Exclude build output (like TypeScript build artifacts, and other build-related files)
+out/*
+*.ts
+*.map
+
+# Exclude markdown documentation (if not needed for the marketplace)
+README.md
+LICENSE.md
+CHANGELOG.md
+
+# Exclude any IDE configuration files (e.g., from VS Code, JetBrains IDEs, etc.)
+.vscode/
+
+# Exclude package-lock.json and yarn.lock (since dependencies will be installed on the machine where it's running)
+package-lock.json
+yarn.lock
+
+# Exclude the .git directory if it's present
+.git/
+
+# Include necessary files (ensure you keep these included):
+!.vscodeignore  # Keep this file
+!package.json   # Package file for the extension
+!out/*          # The output from Webpack (bundled code)
+!README.md      # Include the README file for the marketplace
+!LICENSE.md     # Include the license file for the marketplace
+!tsconfig.json  # TypeScript configuration file if needed for build
+!icon.png       # Extension icon
+!out/extension.js

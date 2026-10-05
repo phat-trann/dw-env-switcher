@@ -1,0 +1,278 @@
+{
+  "name": "dw-env-switcher",
+  "displayName": "DW Environment Switcher",
+  "description": "Easily switch and manage Salesforce sandbox environments, store credentials securely, and export/import setups.",
+  "version": "0.1.11",
+  "publisher": "IvayloTrepetanov",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/interfan/dw-env-switcher"
+  },
+  "license": "MIT",
+  "icon": "icon.png",
+  "main": "./out/extension.js",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "keywords": [
+    "salesforce",
+    "sandbox",
+    "environment",
+    "switcher",
+    "dw",
+    "credentials",
+    "developer",
+    "commerce cloud"
+  ],
+  "categories": [
+    "Other",
+    "Debuggers"
+  ],
+  "activationEvents": [
+    "onCommand:dw-env-switcher.selectSandbox",
+    "onCommand:dw-env-switcher.selectSandboxWithDetails",
+    "onCommand:dw-env-switcher.deleteSavedUsername",
+    "onCommand:dw-env-switcher.deleteSavedSandbox",
+    "onCommand:dw-env-switcher.exportSetup",
+    "onCommand:dw-env-switcher.importSetup",
+    "onCommand:dw-env-switcher.switchCodeVersion",
+    "onCommand:dw-env-switcher.deleteSandboxFromView",
+    "onCommand:dwEnvSwitcherView.refresh",
+    "onCommand:dw-env-switcher.addNewSandbox",
+    "onCommand:dw-env-switcher.changeCartridges",
+    "onCommand:dw-env-switcher.changeUser",
+    "onCommand:dw-env-switcher.editSandboxFromView",
+    "onCommand:dw-env-switcher.changeSavedPassword",
+    "onCommand:dw-env-switcher.enableProphetUpload",
+    "onCommand:dw-env-switcher.disableProphetUpload",
+    "onView:dwCartridgesView",
+    "onCommand:dw-env-switcher.refreshCartridges",
+    "onCommand:dw-env-switcher.openCartridge",
+    "onCommand:dw-env-switcher.revealCartridgeInExplorer",
+    "onView:dwLogsView",
+    "onCommand:dw-env-switcher.refreshLogs",
+    "onCommand:dw-env-switcher.tailLog",
+    "onCommand:dw-env-switcher.stopTailingLog"
+  ],
+  "contributes": {
+    "submenus": [
+      {
+        "id": "dw-env-switcher.sandboxActionsMenu",
+        "label": "Sandbox Actions",
+        "icon": "$(ellipsis)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "dw-env-switcher.addNewSandbox",
+          "when": "view == dwEnvSwitcherView",
+          "group": "navigation"
+        },
+        {
+          "command": "dw-env-switcher.refreshCartridges",
+          "when": "view == dwCartridgesView",
+          "group": "navigation"
+        },
+        {
+          "command": "dw-env-switcher.refreshLogs",
+          "when": "view == dwLogsView",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "submenu": "dw-env-switcher.sandboxActionsMenu",
+          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "group": "inline"
+        },
+        {
+          "command": "dw-env-switcher.openCartridge",
+          "when": "view == dwCartridgesView && viewItem == cartridge",
+          "group": "inline"
+        },
+        {
+          "command": "dw-env-switcher.revealCartridgeInExplorer",
+          "when": "view == dwCartridgesView && viewItem == cartridge",
+          "group": "2_open"
+        },
+        {
+          "command": "dw-env-switcher.stopTailingLog",
+          "when": "view == dwLogsView && viewItem == logFileTailing",
+          "group": "inline"
+        }
+      ],
+      "dw-env-switcher.sandboxActionsMenu": [
+        {
+          "command": "dw-env-switcher.editSandboxFromView",
+          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "group": "1_edit@1"
+        },
+        {
+          "command": "dw-env-switcher.changeCartridges",
+          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "group": "1_edit@2"
+        },
+        {
+          "command": "dw-env-switcher.switchCodeVersion",
+          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "group": "1_edit@3"
+        },
+        {
+          "command": "dw-env-switcher.changeUser",
+          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "group": "1_edit@4"
+        },
+        {
+          "command": "dw-env-switcher.enableProphetUpload",
+          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "group": "2_prophet@1"
+        },
+        {
+          "command": "dw-env-switcher.disableProphetUpload",
+          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "group": "2_prophet@2"
+        },
+        {
+          "command": "dw-env-switcher.deleteSandboxFromView",
+          "when": "view == dwEnvSwitcherView && viewItem == sandbox",
+          "group": "3_danger@1"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "dwEnvSwitcher",
+          "title": "DW Environment Switcher",
+          "icon": "icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "dwEnvSwitcher": [
+        {
+          "id": "dwEnvSwitcherView",
+          "name": "Sandboxes"
+        },
+        {
+          "id": "dwCartridgesView",
+          "name": "Cartridges"
+        },
+        {
+          "id": "dwLogsView",
+          "name": "Logs"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "dw-env-switcher.selectSandbox",
+        "title": "Select Sandbox"
+      },
+      {
+        "command": "dw-env-switcher.selectSandboxWithDetails",
+        "title": "Select Sandbox (Detailed)"
+      },
+      {
+        "command": "dw-env-switcher.editSandboxFromView",
+        "title": "Edit Sandbox"
+      },
+      {
+        "command": "dw-env-switcher.changeCartridges",
+        "title": "Change Cartridges"
+      },
+      {
+        "command": "dw-env-switcher.switchCodeVersion",
+        "title": "Change Code Version"
+      },
+      {
+        "command": "dw-env-switcher.changeUser",
+        "title": "Change User"
+      },
+      {
+        "command": "dw-env-switcher.deleteSandboxFromView",
+        "title": "Delete Sandbox From View"
+      },
+      {
+        "command": "dw-env-switcher.deleteSavedSandbox",
+        "title": "Delete Saved Sandbox"
+      },
+      {
+        "command": "dw-env-switcher.exportSetup",
+        "title": "Export Sandbox Setup"
+      },
+      {
+        "command": "dw-env-switcher.importSetup",
+        "title": "Import Sandbox Setup"
+      },
+      {
+        "command": "dw-env-switcher.addNewSandbox",
+        "title": "Add New Sandbox"
+      },
+      {
+        "command": "dw-env-switcher.deleteSavedUsername",
+        "title": "Delete Saved Username"
+      },
+      {
+        "command": "dwEnvSwitcherView.refresh",
+        "title": "Refresh Sandbox View"
+      },
+      {
+        "command": "dw-env-switcher.changeSavedPassword",
+        "title": "Change Saved Password"
+      },
+      {
+        "command": "dw-env-switcher.enableProphetUpload",
+        "title": "DW Env Switcher: Enable Upload (Prophet)"
+      },
+      {
+        "command": "dw-env-switcher.disableProphetUpload",
+        "title": "DW Env Switcher: Disable Upload (Prophet)"
+      },
+      {
+        "command": "dw-env-switcher.refreshCartridges",
+        "title": "Refresh Cartridges"
+      },
+      {
+        "command": "dw-env-switcher.openCartridge",
+        "title": "Open Cartridge"
+      },
+      {
+        "command": "dw-env-switcher.revealCartridgeInExplorer",
+        "title": "Reveal Cartridge in Explorer"
+      },
+      {
+        "command": "dw-env-switcher.refreshLogs",
+        "title": "Refresh Logs"
+      },
+      {
+        "command": "dw-env-switcher.tailLog",
+        "title": "Tail Log"
+      },
+      {
+        "command": "dw-env-switcher.stopTailingLog",
+        "title": "Stop Tailing"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "bundle": "esbuild src/extension.ts --bundle --platform=node --outfile=out/extension.js --external:vscode --external:@aws-sdk/client-s3",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.3",
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "esbuild": "^0.25.4",
+    "typescript": "^5.0.0",
+    "vitest": "^1.6.1"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "unzipper": "^0.12.3"
+  }
+}
