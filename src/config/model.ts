@@ -1,4 +1,6 @@
+import { validateUploadSettings } from '../upload/config';
 import { randomUUID } from 'crypto';
+import { validateRepoTools } from '../repos/config';
 import { ActiveConfig, Environment, ManagerConfig, Site } from '../types';
 
 export function emptyConfig(): ManagerConfig {
@@ -13,6 +15,8 @@ export function validateConfig(value: unknown): asserts value is ManagerConfig {
     if (!object(value) || value.schemaVersion !== 2 || !Array.isArray(value.environments) || !Array.isArray(value.sites)) {
         throw new Error('Expected schemaVersion 2 with environments and sites arrays.');
     }
+    if (value.upload !== undefined) validateUploadSettings(value.upload);
+    if (value.repoTools !== undefined) validateRepoTools(value.repoTools);
     const ids = new Set<string>();
     for (const [records, fields] of [
         [value.environments, ['id', 'name', 'hostname', 'username', 'password', 'version']],
@@ -22,6 +26,7 @@ export function validateConfig(value: unknown): asserts value is ManagerConfig {
             if (!object(record) || fields.some(key => typeof record[key] !== 'string') || !record.id || !record.name) {
                 throw new Error('Invalid Environment or Site fields.');
             }
+            if (record.repoTools !== undefined) validateRepoTools(record.repoTools);
             if (ids.has(record.id as string)) throw new Error('Environment/Site IDs must be unique.');
             ids.add(record.id as string);
         }

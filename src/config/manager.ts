@@ -12,6 +12,8 @@ export class ConfigManager implements vscode.Disposable {
     private emitter = new vscode.EventEmitter<void>();
     readonly onDidChange = this.emitter.event;
     store?: ConfigStore;
+    beforeActiveChange?: () => Promise<boolean>;
+    async allowActiveChange(): Promise<boolean> { return this.beforeActiveChange ? this.beforeActiveChange() : true; }
     private watchers: vscode.Disposable[] = [];
     private timer?: ReturnType<typeof setTimeout>;
     private configText?: string;
@@ -76,6 +78,7 @@ export class ConfigManager implements vscode.Disposable {
             if (!item) return;
             id = item.id;
         }
+        if ((kind === 'environment' ? store.environmentId : store.siteId) !== id && !await this.allowActiveChange()) return;
         const applied = store.select(kind, id);
         vscode.window.showInformationMessage(applied ? 'Environment and Site selected; dw.json updated.' : `Selected ${kind}. Select the other part to update dw.json.`);
     }
@@ -95,6 +98,7 @@ export class ConfigManager implements vscode.Disposable {
         const password = await this.input('Password', existing?.password, true); if (password === undefined) return;
         const version = await this.input('Version', existing?.version); if (version === undefined) return;
         const entry: Environment = { id: existing?.id ?? randomUUID(), name, hostname, username, password, version };
+        if (existing?.id === store.environmentId && !await this.allowActiveChange()) return;
         store.upsert('environment', entry);
         vscode.window.showInformationMessage(`Environment ${existing ? 'updated' : 'created'}.`);
     }
@@ -106,7 +110,8 @@ export class ConfigManager implements vscode.Disposable {
         const name = await this.input('Site name', existing?.name); if (name === undefined) return;
         const cartridgesPath = await vscode.window.showInputBox({ prompt: 'Cartridges path (colon-separated, in execution order)', value: existing?.cartridgesPath ?? '' });
         if (cartridgesPath === undefined) return;
-        const site: Site = { id: existing?.id ?? randomUUID(), name, cartridgesPath };
+        const site: Site = { ...existing, id: existing?.id ?? randomUUID(), name, cartridgesPath };
+        if (existing?.id === store.siteId && !await this.allowActiveChange()) return;
         store.upsert('site', site);
         vscode.window.showInformationMessage(`Site ${existing ? 'updated' : 'created'}.`);
     }
@@ -122,6 +127,7 @@ export class ConfigManager implements vscode.Disposable {
         if (!selected) return;
         // Existing cartridge order first; append new selections in discovery order.
         const chosen = new Set(selected.map(item => item.label));
+        if (site.id === store.siteId && !await this.allowActiveChange()) return;
         store.upsert('site', { ...site, cartridgesPath: names.filter(name => chosen.has(name)).join(':') });
     }
 
@@ -129,6 +135,7 @@ export class ConfigManager implements vscode.Disposable {
         const store = this.requireStore();
         const confirm = await vscode.window.showWarningMessage(`Delete this ${target.kind}?`, { modal: true }, 'Delete');
         if (confirm !== 'Delete') return;
+        if ((target.kind === 'environment' ? store.environmentId : store.siteId) === target.id && !await this.allowActiveChange()) return;
         store.remove(target.kind, target.id);
     }
 

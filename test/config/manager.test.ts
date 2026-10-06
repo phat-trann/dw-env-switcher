@@ -68,6 +68,20 @@ describe('Configuration UI and watcher integration', () => {
         expect(manager.store!.config.sites[0].cartridgesPath).toBe('external:base');
         expect(manager.store!.environmentId).toBe(envId); expect(manager.store!.siteId).toBe(siteId);
     });
+    it('awaits the active-change guard and canceled guard preserves selection/dw.json', async () => {
+        await createEnv(); await createSite(); const envId = manager.store!.config.environments[0].id; const siteId = manager.store!.config.sites[0].id;
+        await manager.select('environment', envId); manager.beforeActiveChange = vi.fn(async () => false);
+        await manager.select('site', siteId);
+        expect(manager.beforeActiveChange).toHaveBeenCalled(); expect(manager.store!.siteId).toBeUndefined();
+        expect(fs.existsSync(path.join(root, 'dw.json'))).toBe(false);
+    });
+    it('editing a Site preserves its repository tool overrides', async () => {
+        await createSite(); const site = manager.store!.config.sites[0];
+        site.repoTools = { nodeVersion: '18.20.8', priorityBranches: ['develop'] }; manager.store!.save();
+        input().mockResolvedValueOnce('Renamed').mockResolvedValueOnce('custom:base');
+        await manager.run(() => manager.editSite(site.id));
+        expect(manager.store!.config.sites[0].repoTools).toEqual(site.repoTools);
+    });
     it('external invalid JSON disables writes rather than overwriting the file with stale data', async () => {
         await createEnv(); fs.writeFileSync(path.join(root, 'dw-manager.json'), '{invalid');
         callbacks[0](); vi.advanceTimersByTime(200); expect(manager.store).toBeUndefined();

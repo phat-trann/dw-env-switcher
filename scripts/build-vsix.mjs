@@ -7,6 +7,14 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const require = createRequire(import.meta.url);
 const manifest = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
+// Every new version must describe its changes before packaging.
+const changelog = readFileSync(path.join(root, 'CHANGELOG.md'), 'utf8');
+const headings = [...changelog.matchAll(/^## (\d+\.\d+\.\d+)\b[^\n]*\n([\s\S]*?)(?=^## |$(?![\s\S]))/gm)];
+const note = headings.find(entry => entry[1] === manifest.version);
+if (headings[0]?.[1] !== manifest.version || !note?.[2].match(/^[-*] \S/m)) {
+    console.error(`Add a nonempty CHANGELOG.md entry for ${manifest.version} at the top before building.`);
+    process.exit(1);
+}
 const outputDir = path.join(root, 'dist');
 const outputPath = path.join(outputDir, `${manifest.name}-${manifest.version}.vsix`);
 

@@ -1,8 +1,8 @@
 {
   "name": "dw-manager",
   "displayName": "DW Manager",
-  "description": "Manage Salesforce Commerce Cloud Environments and Sites, combine their configuration, browse cartridges, and tail logs.",
-  "version": "2.0.0",
+  "description": "Manage Commerce Cloud Environments and Sites, watch/upload cartridges, debug with Prophet, browse Impex, and tail logs.",
+  "version": "2.8.4",
   "publisher": "Ferb",
   "repository": {
     "type": "git",
@@ -29,9 +29,9 @@
     "Debuggers"
   ],
   "activationEvents": [
+    "onStartupFinished",
     "onView:dwManagerEnvironmentsView",
     "onView:dwManagerSitesView",
-    "onView:dwManagerCartridgesView",
     "onView:dwManagerLogsView",
     "onCommand:dw-manager.selectEnvironment",
     "onCommand:dw-manager.selectSite",
@@ -52,7 +52,33 @@
     "onCommand:dw-manager.revealCartridgeInExplorer",
     "onCommand:dw-manager.refreshLogs",
     "onCommand:dw-manager.tailLog",
-    "onCommand:dw-manager.stopTailingLog"
+    "onCommand:dw-manager.stopTailingLog",
+    "onView:dwManagerImpexView",
+    "onCommand:dw-manager.startDebugging",
+    "onCommand:dw-manager.refreshImpex",
+    "onCommand:dw-manager.openImpexFile",
+    "onCommand:dw-manager.repos.preview",
+    "onCommand:dw-manager.repos.git",
+    "onCommand:dw-manager.repos.install",
+    "onCommand:dw-manager.repos.reinstall",
+    "onCommand:dw-manager.repos.compile",
+    "onCommand:dw-manager.repos.scss",
+    "onCommand:dw-manager.repos.js",
+    "onCommand:dw-manager.repos.install-compile",
+    "onCommand:dw-manager.repos.all",
+    "onCommand:dw-manager.repos.changed",
+    "onCommand:dw-manager.repos.configure",
+    "onCommand:dw-manager.repos.state",
+    "onView:dwManagerActivitiesView",
+    "onCommand:dw-manager.activities.start",
+    "onCommand:dw-manager.activities.stop",
+    "onCommand:dw-manager.activities.refresh",
+    "onCommand:dw-manager.activities.clearFinished",
+    "onCommand:dw-manager.activities.show",
+    "onCommand:dw-manager.enableUploadAll",
+    "onCommand:dw-manager.enableSelectedUpload",
+    "onCommand:dw-manager.enableSelectedUploadAll",
+    "onCommand:dw-manager.showUploadOutput"
   ],
   "contributes": {
     "menus": {
@@ -65,11 +91,6 @@
         {
           "command": "dw-manager.createSite",
           "when": "view == dwManagerSitesView",
-          "group": "navigation"
-        },
-        {
-          "command": "dw-manager.refreshCartridges",
-          "when": "view == dwManagerCartridgesView",
           "group": "navigation"
         },
         {
@@ -86,6 +107,41 @@
           "command": "dw-manager.refreshConfiguration",
           "when": "view == dwManagerSitesView",
           "group": "navigation"
+        },
+        {
+          "command": "dw-manager.startDebugging",
+          "when": "view == dwManagerSitesView",
+          "group": "navigation@3"
+        },
+        {
+          "command": "dw-manager.refreshImpex",
+          "when": "view == dwManagerImpexView",
+          "group": "navigation"
+        },
+        {
+          "command": "dw-manager.activities.refresh",
+          "when": "view == dwManagerActivitiesView",
+          "group": "navigation"
+        },
+        {
+          "command": "dw-manager.activities.clearFinished",
+          "when": "view == dwManagerActivitiesView",
+          "group": "navigation"
+        },
+        {
+          "command": "dw-manager.activities.show",
+          "when": "view == dwManagerSitesView",
+          "group": "5_activity"
+        },
+        {
+          "command": "dw-manager.activities.show",
+          "when": "view == dwManagerEnvironmentsView",
+          "group": "5_activity"
+        },
+        {
+          "command": "dw-manager.showUploadOutput",
+          "when": "view == dwManagerActivitiesView",
+          "group": "2_output@1"
         }
       ],
       "view/item/context": [
@@ -115,19 +171,29 @@
           "group": "2_edit"
         },
         {
-          "command": "dw-manager.openCartridge",
-          "when": "view == dwManagerCartridgesView && viewItem == cartridge",
-          "group": "inline"
-        },
-        {
-          "command": "dw-manager.revealCartridgeInExplorer",
-          "when": "view == dwManagerCartridgesView && viewItem == cartridge",
-          "group": "2_open"
-        },
-        {
           "command": "dw-manager.stopTailingLog",
           "when": "view == dwManagerLogsView && viewItem == logFileTailing",
           "group": "inline"
+        },
+        {
+          "submenu": "dw-manager.siteActions",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "inline@2"
+        },
+        {
+          "submenu": "dw-manager.repoActions",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "inline@3"
+        },
+        {
+          "command": "dw-manager.activities.stop",
+          "when": "view == dwManagerActivitiesView && viewItem =~ /^(activityUploadOn|activityPending|activityDebugRunning|activityTaskRunning)$/",
+          "group": "inline@1"
+        },
+        {
+          "command": "dw-manager.activities.start",
+          "when": "view == dwManagerActivitiesView && viewItem =~ /^(activityUploadOff|activityTaskStopped)$/",
+          "group": "inline@1"
         }
       ],
       "commandPalette": [
@@ -152,20 +218,123 @@
           "when": "false"
         },
         {
-          "command": "dw-manager.openCartridge",
-          "when": "false"
-        },
-        {
-          "command": "dw-manager.revealCartridgeInExplorer",
-          "when": "false"
-        },
-        {
           "command": "dw-manager.tailLog",
           "when": "false"
         },
         {
           "command": "dw-manager.stopTailingLog",
           "when": "false"
+        },
+        {
+          "command": "dw-manager.openImpexFile",
+          "when": "false"
+        },
+        {
+          "command": "dw-manager.activities.start",
+          "when": "false"
+        },
+        {
+          "command": "dw-manager.activities.stop",
+          "when": "false"
+        }
+      ],
+      "dw-manager.siteActions": [
+        {
+          "command": "dw-manager.startDebugging",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "0_debug@1"
+        },
+        {
+          "command": "dw-manager.enableProphetUpload",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_upload@1"
+        },
+        {
+          "command": "dw-manager.disableProphetUpload",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_upload@2"
+        },
+        {
+          "command": "dw-manager.enableUploadAll",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_upload@6"
+        },
+        {
+          "command": "dw-manager.enableSelectedUpload",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_upload@7"
+        },
+        {
+          "command": "dw-manager.enableSelectedUploadAll",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_upload@8"
+        },
+        {
+          "command": "dw-manager.showUploadOutput",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "2_output@1"
+        }
+      ],
+      "dw-manager.repoActions": [
+        {
+          "command": "dw-manager.repos.preview",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "0_preview@0"
+        },
+        {
+          "command": "dw-manager.repos.git",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_run@1"
+        },
+        {
+          "command": "dw-manager.repos.install",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_run@2"
+        },
+        {
+          "command": "dw-manager.repos.reinstall",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_run@3"
+        },
+        {
+          "command": "dw-manager.repos.compile",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_run@4"
+        },
+        {
+          "command": "dw-manager.repos.scss",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_run@5"
+        },
+        {
+          "command": "dw-manager.repos.js",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_run@6"
+        },
+        {
+          "command": "dw-manager.repos.install-compile",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_run@7"
+        },
+        {
+          "command": "dw-manager.repos.all",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_run@8"
+        },
+        {
+          "command": "dw-manager.repos.changed",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "1_run@9"
+        },
+        {
+          "command": "dw-manager.repos.configure",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "2_settings@10"
+        },
+        {
+          "command": "dw-manager.repos.state",
+          "when": "view == dwManagerSitesView && viewItem == site",
+          "group": "2_settings@11"
         }
       ]
     },
@@ -189,12 +358,17 @@
           "name": "Sites"
         },
         {
-          "id": "dwManagerCartridgesView",
-          "name": "Cartridges"
+          "id": "dwManagerActivitiesView",
+          "name": "Activities",
+          "visibility": "visible"
         },
         {
           "id": "dwManagerLogsView",
           "name": "Logs"
+        },
+        {
+          "id": "dwManagerImpexView",
+          "name": "Impex"
         }
       ]
     },
@@ -252,11 +426,11 @@
       },
       {
         "command": "dw-manager.enableProphetUpload",
-        "title": "DW Manager: Enable Upload (Prophet)"
+        "title": "DW Manager: Enable Upload (Watch Changes Only)"
       },
       {
         "command": "dw-manager.disableProphetUpload",
-        "title": "DW Manager: Disable Upload (Prophet)"
+        "title": "DW Manager: Disable Upload"
       },
       {
         "command": "dw-manager.refreshCartridges",
@@ -283,6 +457,151 @@
       {
         "command": "dw-manager.stopTailingLog",
         "title": "Stop Tailing"
+      },
+      {
+        "command": "dw-manager.startDebugging",
+        "title": "Start Debugging",
+        "icon": "$(debug-start)"
+      },
+      {
+        "command": "dw-manager.refreshImpex",
+        "title": "Refresh Impex",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "dw-manager.openImpexFile",
+        "title": "Open Impex File"
+      },
+      {
+        "command": "dw-manager.repos.preview",
+        "title": "Preview Site Repositories"
+      },
+      {
+        "command": "dw-manager.repos.git",
+        "title": "Git Reset All"
+      },
+      {
+        "command": "dw-manager.repos.install",
+        "title": "Install All"
+      },
+      {
+        "command": "dw-manager.repos.reinstall",
+        "title": "Re-install All"
+      },
+      {
+        "command": "dw-manager.repos.compile",
+        "title": "Compile All"
+      },
+      {
+        "command": "dw-manager.repos.scss",
+        "title": "Compile SCSS"
+      },
+      {
+        "command": "dw-manager.repos.js",
+        "title": "Compile JS"
+      },
+      {
+        "command": "dw-manager.repos.install-compile",
+        "title": "Install and Compile All"
+      },
+      {
+        "command": "dw-manager.repos.all",
+        "title": "Update All Repositories"
+      },
+      {
+        "command": "dw-manager.repos.changed",
+        "title": "Update Changed Repositories"
+      },
+      {
+        "command": "dw-manager.repos.configure",
+        "title": "Configure Repository Tools"
+      },
+      {
+        "command": "dw-manager.repos.state",
+        "title": "Open Repository State"
+      },
+      {
+        "command": "dw-manager.activities.start",
+        "title": "Start / Re-run Activity",
+        "icon": "$(play)"
+      },
+      {
+        "command": "dw-manager.activities.stop",
+        "title": "Stop Activity",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "dw-manager.activities.refresh",
+        "title": "Refresh Activities",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "dw-manager.activities.clearFinished",
+        "title": "Clear Finished Activities",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "dw-manager.activities.show",
+        "title": "DW Manager: Show Activities",
+        "icon": "$(list-tree)"
+      },
+      {
+        "command": "dw-manager.enableUploadAll",
+        "title": "DW Manager: Enable Upload and Upload All"
+      },
+      {
+        "command": "dw-manager.enableSelectedUpload",
+        "title": "DW Manager: Enable Upload for Selected Cartridges"
+      },
+      {
+        "command": "dw-manager.enableSelectedUploadAll",
+        "title": "DW Manager: Enable Upload and Upload Selected Cartridges"
+      },
+      {
+        "command": "dw-manager.showUploadOutput",
+        "title": "DW Manager: Show Upload Output",
+        "icon": "$(output)"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "dw-manager.siteActions",
+        "label": "Site Actions",
+        "icon": "$(ellipsis)"
+      },
+      {
+        "id": "dw-manager.repoActions",
+        "label": "Repository Tools",
+        "icon": "$(repo)"
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "dw-manager-repos",
+        "required": [
+          "siteId",
+          "action"
+        ],
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "Site UUID in dw-manager.json"
+          },
+          "action": {
+            "type": "string",
+            "description": "Repository action"
+          },
+          "runId": {
+            "type": "string",
+            "description": "Unique execution ID"
+          },
+          "siteName": {
+            "type": "string"
+          },
+          "rootDir": {
+            "type": "string"
+          }
+        }
       }
     ]
   },

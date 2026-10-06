@@ -27,7 +27,7 @@ export async function exportSetup(_context: vscode.ExtensionContext): Promise<vo
     } catch { vscode.window.showErrorMessage('Cannot export DW Manager setup. Check workspace configuration and destination.'); }
 }
 
-export async function importSetup(_context: vscode.ExtensionContext): Promise<void> {
+export async function importSetup(_context: vscode.ExtensionContext, beforeWrite?: () => Promise<boolean>): Promise<void> {
     const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     if (!root) return;
     const choice = await vscode.window.showOpenDialog({ canSelectFiles: true, filters: { Zip: ['zip'] } });
@@ -48,6 +48,7 @@ export async function importSetup(_context: vscode.ExtensionContext): Promise<vo
             const migration = migrateLegacy(legacy, active); config = migration.config; active = migration.active ?? active;
         }
         validateConfig(config);
+        if (beforeWrite && !await beforeWrite()) return;
         const store = new ConfigStore(root); store.config = config; store.save();
         if (active) fs.writeFileSync(store.activePath, JSON.stringify(active, null, 4) + '\n');
         vscode.window.showInformationMessage('DW Manager setup imported.');

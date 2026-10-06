@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 2,
+  "environments": [],
+  "sites": [],
+  "upload": {
+    "concurrency": 5,
+    "ignore": [
+      "node_modules/",
+      "\\.zip$"
+    ],
+    "watchDebounceMs": 200
+  }
+}
